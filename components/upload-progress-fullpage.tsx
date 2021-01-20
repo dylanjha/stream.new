@@ -59,7 +59,7 @@ const UploadProgressFullpage: React.FC<Props> = ({ file, resetPage }) => {
       });
 
       upChunk.on('error', (err) => {
-        setErrorMessage(err.detail);
+        setErrorMessage(err.detail.message);
       });
 
       upChunk.on('progress', (progressEvt) => {
