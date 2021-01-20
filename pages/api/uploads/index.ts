@@ -11,7 +11,6 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
       try {
         const upload = await Video.Uploads.create({
           new_asset_settings: { playback_policy: 'public' },
-          cors_origin: '*',
         });
         res.json({
           id: upload.id,
