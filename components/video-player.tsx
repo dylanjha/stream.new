@@ -1,9 +1,10 @@
 /* globals Image */
 import { useState, useEffect, useRef } from 'react';
-import Plyr from 'plyr';
-import 'plyr/dist/plyr.css';
+// import Plyr from 'plyr';
+// import 'plyr/dist/plyr.css';
 import Hls from 'hls.js';
 import mux from 'mux-embed';
+import 'media-chrome';
 import logger from '../lib/logger';
 import { breakpoints } from '../style-vars';
 
@@ -43,7 +44,7 @@ type SizedEvent = {
 
 const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const playerRef = useRef<Plyr | null>(null);
+  // const playerRef = useRef<Plyr | null>(null);
   const [isVertical, setIsVertical] = useState<boolean | null>();
   const [playerInitTime] = useState(Date.now());
 
@@ -77,6 +78,7 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
     hls = null;
     if (video) {
       video.addEventListener('error', videoError);
+      /*
       playerRef.current = new Plyr(video, {
         previewThumbnails: { enabled: true, src: `https://image.mux.com/${playbackId}/storyboard.vtt` },
         storage: { enabled: false },
@@ -85,6 +87,7 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
         },
         captions: { active: false, language: 'auto', update: true }
       });
+      */
 
       if (video.canPlayType('application/vnd.apple.mpegurl')) {
         // This will run in safari, where HLS is supported natively
@@ -135,7 +138,25 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
   return (
     <>
       <div className='video-container'>
-        <video ref={videoRef} poster={poster} controls playsInline />
+        <media-container>
+          <video
+            ref={videoRef}
+            slot="media"
+            poster={poster}
+            playsInline
+            crossOrigin="true"
+          >
+            <track label="thumbnails" default kind="metadata" src={`https://image.mux.com/${playbackId}/storyboard.vtt`} />
+          </video>
+          <media-control-bar>
+            <media-play-button>Play</media-play-button>
+            <media-mute-button>Mute</media-mute-button>
+            <media-volume-range>Volume</media-volume-range>
+            <media-progress-range>Progress</media-progress-range>
+            <media-pip-button>PIP</media-pip-button>
+            <media-fullscreen-button>Fullscreen</media-fullscreen-button>
+          </media-control-bar>
+        </media-container>
       </div>
       <style jsx>{`
         :global(:root) {
