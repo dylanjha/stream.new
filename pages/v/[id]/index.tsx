@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import copy from 'copy-to-clipboard';
-import FullpageLoader from '../../components/fullpage-loader';
-import VideoPlayer from '../../components/video-player';
-import Layout from '../../components/layout';
-import ReportForm from '../../components/report-form';
-import { HOST_URL } from '../../constants';
+import FullpageLoader from '../../../components/fullpage-loader';
+import VideoPlayer from '../../../components/video-player';
+import Layout from '../../../components/layout';
+import ReportForm from '../../../components/report-form';
+import { HOST_URL } from '../../../constants';
 
 type Params = {
   id: string;
@@ -107,6 +108,9 @@ const Playback: React.FC<Props> = ({ playbackId, shareUrl, poster }) => {
             </a>
           )}
         </div>
+        {!openReport && (
+          <div><Link href={`/v/${playbackId}/clip`}><a>Clip this video</a></Link></div>
+        )}
         <div className="report-form">
           { openReport && <ReportForm playbackId={playbackId} close={() => setOpenReport(false)} /> }
         </div>
