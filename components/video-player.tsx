@@ -8,6 +8,21 @@ import 'media-chrome';
 import logger from '../lib/logger';
 import { breakpoints } from '../style-vars';
 
+declare global {
+  module JSX { // eslint-disable-line @typescript-eslint/no-namespace,@typescript-eslint/prefer-namespace-keyword
+    interface IntrinsicElements {
+      'media-container': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-control-bar': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-play-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-mute-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-volume-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-progress-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-pip-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-fullscreen-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    }
+  }
+}
+
 /*
  * We need to set the width/height of the player depending on what the dimensions of
  * the underlying video source is.
