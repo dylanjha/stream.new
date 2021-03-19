@@ -17,6 +17,7 @@ declare global {
       'media-mute-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-volume-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-progress-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-playback-rate-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-pip-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-fullscreen-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
     }
@@ -168,30 +169,17 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
             <media-mute-button>Mute</media-mute-button>
             <media-volume-range>Volume</media-volume-range>
             <media-progress-range>Progress</media-progress-range>
+            <media-playback-rate-button></media-playback-rate-button>
             <media-pip-button>PIP</media-pip-button>
             <media-fullscreen-button>Fullscreen</media-fullscreen-button>
           </media-control-bar>
         </media-container>
       </div>
       <style jsx>{`
-        :global(:root) {
-          --plyr-color-main: #1b1b1b;
-          --plyr-range-fill-background: #ccc;
-        }
-        :global(.plyr__controls button),
-        :global(.plyr__controls input) {
-          cursor: pointer;
-        }
         .video-container {
           margin-bottom: 40px;
           margin-top: 40px;
           border-radius: 30px;
-        }
-        :global(.plyr:fullscreen video) {
-          max-width: initial;
-          max-height: initial;
-          width: 100%;
-          height: 100%;
         }
         video {
           display: block;
@@ -208,9 +196,6 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
           }
         }
         @media only screen and (max-width: ${breakpoints.md}px) {
-          :global(.plyr__volume, .plyr__menu, .plyr--pip-supported [data-plyr=pip]) {
-            display: none;
-          }
           video: {
             width: 100%;
             height: 100%;
