@@ -3,8 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import logger from '../lib/logger';
 import Router from 'next/router';
-import nouislider from 'nouislider';
-import 'nouislider/distribute/nouislider.css';
+import 'media-chrome';
 import { breakpoints } from '../style-vars';
 
 type Props = {
@@ -21,12 +20,25 @@ type SizedEvent = {
   }
 };
 
-function noop () {
+declare global {
+  module JSX { // eslint-disable-line @typescript-eslint/no-namespace,@typescript-eslint/prefer-namespace-keyword
+    interface IntrinsicElements {
+      'media-container': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-control-bar': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-play-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-mute-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-volume-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-progress-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-pip-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-trimmer': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-fullscreen-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    }
+  }
 }
 
 const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const sliderRef = useRef<HTMLElement | null>(null);
+  const mediaRangeRef = useRef<HTMLElement | null>(null);
   const [isVertical, setIsVertical] = useState<boolean | null>();
   const [errorMessage, setErrorMessage] = useState('');
   const [isCreatingClip, setIsCreatingClip] = useState(false);
@@ -150,46 +162,35 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
   }, [startTime, endTime]);
 
   useEffect(() => {
-    if (!(sliderRef.current && duration)) {
-      return noop;
+    if (mediaRangeRef.current) {
+      mediaRangeRef.current.addEventListener('updated', ((evt: CustomEvent) => {
+        const { startTime, endTime } = evt.detail;
+        setStartTime(startTime);
+        setEndTime(endTime);
+      }) as EventListener);
     }
-
-    /*
-     * Pick some sensible start/end times: 25% - 50% of the video
-     * is a good place to start
-     */
-    const start = (duration / 4);
-    const end = (duration / 2);
-    nouislider.create(sliderRef.current, {
-      start: [start, end],
-      connect: true,
-      range: {
-        min: 0,
-        max: duration,
-      }
-    });
-
-    sliderRef.current.noUiSlider.on('update', (values) => {
-      if (values[0]) {
-        setStartTime(+values[0]);
-      }
-      if (values[1]) {
-        setEndTime(+values[1]);
-      }
-    });
-
-    return () => {
-      sliderRef.current.noUiSlider.destroy();
-    };
-  }, [duration, sliderRef]);
+  }, [duration, mediaRangeRef]);
 
   return (
     <>
       <div className='video-container'>
-        <video ref={videoRef} poster={poster} controls playsInline />
+        <media-container>
+          <video
+            ref={videoRef}
+            slot="media"
+            crossOrigin="true"
+          >
+            <track label="thumbnails" default kind="metadata" src={`https://image.mux.com/${playbackId}/storyboard.vtt`}></track>
+          </video>
+          <media-control-bar>
+            <media-play-button></media-play-button>
+            <media-trimmer ref={mediaRangeRef}></media-trimmer>
+            <media-mute-button></media-mute-button>
+            <media-volume-range></media-volume-range>
+          </media-control-bar>
+        </media-container>
+
         <div className="times">
-          <div className="scrubber"></div>
-          <div ref={sliderRef} />
           <div>Start: {startTime} <button onClick={() => setStartTime(Math.round(videoRef.current?.currentTime || 0))}>Set start</button></div>
           <div>End: {endTime} <button onClick={() => setEndTime(Math.round(videoRef.current?.currentTime || 0))}>Set end</button></div>
           {isCreatingClip ? <div>Creating clip...</div> : <button onClick={createClip}>create clip</button>}

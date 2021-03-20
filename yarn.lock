@@ -4474,6 +4474,11 @@ md5.js@^1.3.4:
     inherits "^2.0.1"
     safe-buffer "^5.1.2"
 
+media-chrome@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.0.14.tgz#8b21e7fe2bfb5033ca6a31ee14d7d358837d05c3"
+  integrity sha512-BeWNf266wxRMUBK/QMESQ5fqB8P0JA2yvPL5AZScO3X8pD3AtmF57xjpeoIPFXygZbZafTi8Ki6nHRerAsbJqQ==
+
 merge-stream@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
@@ -4851,11 +4856,6 @@ normalize-url@^4.1.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.0.tgz#453354087e6ca96957bd8f5baf753f5982142129"
   integrity sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ==
-
-nouislider@^14.6.3:
-  version "14.6.3"
-  resolved "https://registry.yarnpkg.com/nouislider/-/nouislider-14.6.3.tgz#4dad5b6651d6515f6e6829f8b8e3a1736a5c0ffb"
-  integrity sha512-/3tAqsWY2JYW9vd7bC14bFRA1P9A+pRHOtKmoMsyfnB0fQcd1UFx2pdY1Ey5wAUzTnXTesmYaEo/ecLVETijIQ==
 
 npm-run-path@^2.0.0:
   version "2.0.2"
