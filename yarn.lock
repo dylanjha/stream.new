@@ -561,9 +561,9 @@
     chalk "^4.0.0"
 
 "@mux/mux-node@^3.0":
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/@mux/mux-node/-/mux-node-3.1.3.tgz#0aba1669286e7db1af57112dd7cf4751e90c7a70"
-  integrity sha512-71WUTmOSKggEeH1I2Sh/6TvSsC0uTY/MV3YY8HzhhTD8Y3AkLkOlAXR02DJejkzTaFm6L5WctNTYPfbVyS1EMQ==
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@mux/mux-node/-/mux-node-3.2.1.tgz#69870ebf91fcfa182bb47f69dc3a394d07a0797e"
+  integrity sha512-kpXxn5J4RP6BClSKYJwq7lHjcg4S3vYyqfOLQbxuBLcR+/MbXlFJE+IOLGKIkAbTbDrfrR91uyVFa8Kgj59Cyg==
   dependencies:
     axios "^0.21.1"
     esdoc-ecmascript-proposal-plugin "^1.0.0"
@@ -2903,9 +2903,9 @@ flatted@^3.1.0:
   integrity sha512-zAoAQiudy+r5SvnSw3KJy5os/oRJYHzrzja/tBDqrZtNhUw8bt6y8OBzMWcjWr+8liV8Eb6yOhw8WZ7VFZ5ZzA==
 
 follow-redirects@^1.10.0:
-  version "1.13.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.2.tgz#dd73c8effc12728ba5cf4259d760ea5fb83e3147"
-  integrity sha512-6mPTgLxYm3r6Bkkg0vNM0HTjfGrOEtsfbhagQvbxDEsEkpNhw582upBaoRZylzen6krEmxXJgt9Ju6HiI4O7BA==
+  version "1.13.3"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.3.tgz#e5598ad50174c1bc4e872301e82ac2cd97f90267"
+  integrity sha512-DUgl6+HDzB0iEptNQEXLx/KhTmDb8tZUHSeLqpnjpknR70H0nC2t9N73BK6fN4hOvJ84pKlIQVQ4k5FFlBedKA==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -4474,10 +4474,10 @@ md5.js@^1.3.4:
     inherits "^2.0.1"
     safe-buffer "^5.1.2"
 
-media-chrome@^0.0.14:
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.0.14.tgz#8b21e7fe2bfb5033ca6a31ee14d7d358837d05c3"
-  integrity sha512-BeWNf266wxRMUBK/QMESQ5fqB8P0JA2yvPL5AZScO3X8pD3AtmF57xjpeoIPFXygZbZafTi8Ki6nHRerAsbJqQ==
+media-chrome@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.0.15.tgz#d86ffafa9b97b5d09a41e0778ded81b31c56f1cc"
+  integrity sha512-Ar9AZRZuJcH4eAo9/9xBxk8o2FxsEa2IPyQBtDfllpCMF2HTml39ieZPZXQUUVtp2ts/jwp8WqcZJcTvxyGJWw==
 
 merge-stream@^2.0.0:
   version "2.0.0"

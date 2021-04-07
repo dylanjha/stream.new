@@ -30,7 +30,7 @@ declare global {
       'media-volume-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-progress-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-pip-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-trimmer': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-clip-selector': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-fullscreen-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
     }
   }
@@ -184,7 +184,7 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
           </video>
           <media-control-bar>
             <media-play-button></media-play-button>
-            <media-trimmer ref={mediaRangeRef}></media-trimmer>
+            <media-clip-selector></media-clip-selector>
             <media-mute-button></media-mute-button>
             <media-volume-range></media-volume-range>
           </media-control-bar>
@@ -198,33 +198,22 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
         </div>
       </div>
       <style jsx>{`
+        .video-container {
+          width: 100%;
+        }
+        .video-container :global(media-control-bar) {
+          opacity: 1;
+        }
+        .video-container :global(media-container) {
+          margin-left: auto;
+          margin-right: auto;
+        }
         .times {
           color: white;
         }
-        .scrubber {
-          height: 6px;
-          width: 100%;
-          background-color: gray;
-        }
-        video {
-          display: block;
-          max-width: 100%;
-          max-height: 50vh;
-          cursor: pointer;
-        }
         @media only screen and (min-width: ${breakpoints.md}px) {
-          video {           
-            width: ${isVertical ? 'auto' : '1000px'};
-            height: ${isVertical ? '600px' : 'auto'}; 
-            max-height: 70vh;
-            min-width: 30rem;
-          }
         }
         @media only screen and (max-width: ${breakpoints.md}px) {
-          video: {
-            width: 100%;
-            height: 100%;
-          }
         }
       `}
       </style>
