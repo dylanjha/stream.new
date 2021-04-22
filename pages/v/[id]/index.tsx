@@ -33,6 +33,7 @@ export const getStaticProps: GetStaticProps = async (context)  => {
       logger.warn('Video for playbackId not found in database', playbackId);
     }
     if (video?.disabledByModeration) {
+      logger('Video has been disabledByModeration', playbackId);
       return {
         props: {
           playbackId,
@@ -123,7 +124,7 @@ const Playback: React.FC<Props> = ({ playbackId, shareUrl, staticErrorMessage, p
       {errorMessage && <h1 className="error-message">{errorMessage}</h1>}
       {showLoading && <FullpageLoader text="Loading player" />}
       <div className="wrapper">
-        {!openReport && <VideoPlayer playbackId={playbackId} poster={poster} onLoaded={() => setIsLoaded(true)} onError={onError} />}
+        {false && !openReport && <VideoPlayer playbackId={playbackId} poster={poster} onLoaded={() => setIsLoaded(true)} onError={onError} />}
         <div className="actions">
           {!openReport && <a onClick={copyUrl} onKeyPress={copyUrl} role="button" tabIndex={0}>{ isCopied ? 'Copied to clipboard' :'Copy video URL' }</a>}
           {!openReport && (

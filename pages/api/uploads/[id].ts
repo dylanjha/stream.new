@@ -4,10 +4,11 @@ import got from 'got';
 
 const { Video } = new Mux();
 
-// const NGROK_HOST = 'https://moderationdemo.ngrok.io';
-const NGROK_HOST = 'https://api.mux.com/video';
+const NGROK_HOST = 'https://moderationdemo.ngrok.io';
+// const NGROK_HOST = 'https://api.mux.com/video';
+
 const headers = {
-  Authorization: 'Basic ' + Buffer.from(`${process.env.MUX_TOKEN_ID}:${process.env.MUX_TOKEN_SECRET}`).toString('base64'),
+  // Authorization: 'Basic ' + Buffer.from(`${process.env.MUX_TOKEN_ID}:${process.env.MUX_TOKEN_SECRET}`).toString('base64'),
   'content-type': 'application/json',
   'grpc-metadata-mux-environment': 1,
 };
@@ -15,12 +16,12 @@ const headers = {
 async function createDemoAsset () {
   const newAssetResp = await got.post(`${NGROK_HOST}/v1/assets`, {
     json: {
-      input: [
+      inputs: [
         {
-          url: `https://www.dropbox.com/s/saxi7pdp2ficqf7/baywatch-opening-credits.mp4?dl=0`,
+          url: 'https://www.dropbox.com/s/saxi7pdp2ficqf7/baywatch-opening-credits.mp4?dl=0',
         }
       ],
-      playback_policy: 'public',
+      playback_policy: ['public'],
     },
     headers,
     responseType: 'json',
@@ -46,7 +47,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
         });
       } catch (e) {
         res.statusCode = 500;
-        console.error('Request error', e); // eslint-disable-line no-console
+        console.error('Request error', e.response); // eslint-disable-line no-console
         res.json({ error: 'Error getting upload/asset' });
       }
       break;
