@@ -1,7 +1,36 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Mux from '@mux/mux-node';
+import got from 'got';
+import { blockPlaybackId } from '../../../video-actions';
 
 const { Video } = new Mux();
+
+const NGROK_HOST = 'https://moderationdemo.ngrok.io';
+const headers = {
+  'content-type': 'application/json',
+  'grpc-metadata-mux-environment': 1,
+};
+
+async function getAsset (assetId: string) {
+  const assetResp = await got.get(`${NGROK_HOST}/assets/${assetId}`, { headers, responseType: 'json' });
+  return assetResp.body?.data?;
+}
+
+async function requestModerationInfo (assetId: string) {
+  const assetResp = await got.put(`${NGROK_HOST}/assets/${assetId}/moderation`, {
+    headers,
+    responseType: 'json',
+    json: {moderation: 'standard'}
+  });
+}
+
+async function checkIfThisIsTooHotToStream (asset) {
+  const playbackId = asset.playback_ids[0].id;
+
+  if (asset.moderation_info.adult >= 3 || asset.moderation_info.racy >= 4) {
+    await blockPlaybackId(playbackId);
+  }
+}
 
 export default async function assetHandler (req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -9,14 +38,36 @@ export default async function assetHandler (req: NextApiRequest, res: NextApiRes
   switch (method) {
     case 'GET':
       try {
-        const asset = await Video.Assets.get(req.query.id as string);
+        const assetId = (req.query.id as string);
+        let asset = await getAsset(assetId);
         if (!(asset.playback_ids && asset.playback_ids[0])) {
           throw new Error('Error getting playback_id from asset');
+        }
+        /*
+         * Asset is ready and doesn't have moderation info, so let's request it
+         */
+        if (asset.status === 'ready' && !asset.moderation_info) {
+          asset = await requestModerationInfo(assetId);
+        }
+        /*
+         * If moderation_info is 'ready', let's check if it's TOO HOT
+         *
+         * If this _is_ too hot, then the playback ID will be flagged in our database and we
+         * are all good
+         *
+         */
+        if (asset.moderation_info.status === 'ready') {
+          await checkIfThisIsTooHotToStream(asset);
         }
         res.json({
           asset: {
             id: asset.id,
-            status: asset.status,
+            /*
+             * If the asset has moderation_info, we care about that moderation info 'status'
+             *
+             * If it does not, then all we care about is the asset status
+             */
+            status: (asset.status === 'ready ' && asset.moderation_info.status === 'ready') ? 'ready' : 'preparing',
             errors: asset.errors,
             playback_id: asset.playback_ids[0].id,
           },

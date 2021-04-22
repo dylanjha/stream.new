@@ -8,6 +8,7 @@
     "format": "yarn lint",
     "lint": "yarn eslint . --ext .js,.jsx,.ts,.tsx",
     "prisma": "DOTENV_CONFIG_PATH=.env.local npx -n \"-r dotenv/config\" prisma",
+    "moderate-playback-id": "DOTENV_CONFIG_PATH=.env.local node ./scripts/moderate_playback_id",
     "start": "next start",
     "test": "jest",
     "tsc": "tsc"
