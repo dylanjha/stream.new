@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Video {
+  id                   Int      @default(autoincrement()) @id
+  playbackId           String?  @db.VarChar(255) @unique
+  assetId              String?  @db.VarChar(255) @unique
+  uploadId             String?  @db.VarChar(255) @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  muxAsset             Json?
+  disabledByModeration Boolean  @default(false)
+}

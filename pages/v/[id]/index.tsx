@@ -9,6 +9,7 @@ import Layout from '../../../components/layout';
 import ReportForm from '../../../components/report-form';
 import { HOST_URL } from '../../../constants';
 import logger from '../../../lib/logger';
+import prisma from '../../../lib/prisma-client';
 
 type Params = {
   id: string;
@@ -18,11 +19,31 @@ export type Props = {
   playbackId: string,
   shareUrl: string,
   poster: string
+  staticErrorMessage?: string,
 };
 
 export const getStaticProps: GetStaticProps = async (context)  => {
   const { params } = context;
   const { id: playbackId } = (params as Params);
+  try {
+    const video = await prisma.video.findFirst({
+      where: { playbackId },
+    });
+    if (!video) {
+      logger.warn('Video for playbackId not found in database', playbackId);
+    }
+    if (video?.disabledByModeration) {
+      return {
+        props: {
+          playbackId,
+          staticErrorMessage: 'This video does not exist',
+        },
+      };
+    }
+  } catch (e) {
+    logger.warn(`Error connecting to database for ${playbackId}`, e);
+  }
+
   const poster = `https://image.mux.com/${playbackId}/thumbnail.png`;
   const shareUrl = `${HOST_URL}/v/${playbackId}`;
 
@@ -37,7 +58,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const META_TITLE = "View this video created on stream.new";
-const Playback: React.FC<Props> = ({ playbackId, shareUrl, poster }) => {
+const Playback: React.FC<Props> = ({ playbackId, shareUrl, staticErrorMessage, poster }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCopied, setIsCopied] = useState(false);
@@ -50,6 +71,12 @@ const Playback: React.FC<Props> = ({ playbackId, shareUrl, poster }) => {
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (staticErrorMessage) {
+      setErrorMessage(staticErrorMessage);
+    }
+  }, [staticErrorMessage]);
 
   if (router.isFallback) {
     return (

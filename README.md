@@ -99,6 +99,20 @@ After all of this is set up the flow will be:
 1. (optional) Your server verifies the webhook signature
 1. If the webhook matches `video.asset.ready` then your server will post a message to your slack channel that has the Mux Asset ID, the Mux Playback ID, and a thumbnail of the video.
 
+### Database
+
+The entire app can be run stateless, without a database. A database *is* used for 1 thing, and that is checking if a video has been disabled due to automated moderation.
+
+```
+// .env.local
+
+DATABASE_URL=postgresql://..connection-string
+```
+
+The production postgres database lives in Digital Ocean.
+
+The ORM used for connecting to the database is [Prisma](https://www.prisma.io/). To run prisma commands, use `yarn prisma` instead of using the prisma CLI directly (`yarn prisma` will make sure your `.env.local` file gets loaded).
+
 ### Videos to test in development:
 
 When developing, if you make any changes to the video player, make sure it works and looks good with videos of various dimensions:

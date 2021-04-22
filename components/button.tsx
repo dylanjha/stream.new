@@ -25,6 +25,8 @@ const Button = forwardRef<ButtonOrAnchor, Props>(
           button {
             cursor: pointer;
             width: ${fullW ? '100%' : 'auto'};
+            max-width: 100%;
+            word-break: break-word;
           }
           a {
             text-decoration: none;
