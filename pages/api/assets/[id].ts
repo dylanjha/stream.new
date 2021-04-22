@@ -1,32 +1,40 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Mux from '@mux/mux-node';
 import got from 'got';
-import { blockPlaybackId } from '../../../video-actions';
+import { blockPlaybackId } from '../../../lib/video-actions';
 
 const { Video } = new Mux();
 
-const NGROK_HOST = 'https://moderationdemo.ngrok.io';
+// const NGROK_HOST = 'https://moderationdemo.ngrok.io';
+const NGROK_HOST = 'https://api.mux.com/video';
+
 const headers = {
+  Authorization: 'Basic ' + Buffer.from(`${process.env.MUX_TOKEN_ID}:${process.env.MUX_TOKEN_SECRET}`).toString('base64'),
   'content-type': 'application/json',
   'grpc-metadata-mux-environment': 1,
 };
 
 async function getAsset (assetId: string) {
-  const assetResp = await got.get(`${NGROK_HOST}/assets/${assetId}`, { headers, responseType: 'json' });
-  return assetResp.body?.data?;
+  const assetResp = await got.get(`${NGROK_HOST}/v1/assets/${assetId}`, { headers, responseType: 'json' });
+  return assetResp.body?.data
 }
 
-async function requestModerationInfo (assetId: string) {
-  const assetResp = await got.put(`${NGROK_HOST}/assets/${assetId}/moderation`, {
-    headers,
-    responseType: 'json',
-    json: {moderation: 'standard'}
-  });
+async function requestModerationInfo (asset) {
+  asset.moderation_info = { status: "ready" };
+  return asset;
+ //   const assetResp = await got.put(`${NGROK_HOST}/v1/assets/${asset.id}/moderation`, {
+ //     headers,
+ //     responseType: 'json',
+ //     json: {moderation: 'standard'}
+ //   });
+ //   return assetResp.body.data;
 }
 
 async function checkIfThisIsTooHotToStream (asset) {
+  return;
   const playbackId = asset.playback_ids[0].id;
 
+  console.log('asset', asset.id, asset.moderation_info);
   if (asset.moderation_info.adult >= 3 || asset.moderation_info.racy >= 4) {
     await blockPlaybackId(playbackId);
   }
@@ -47,7 +55,7 @@ export default async function assetHandler (req: NextApiRequest, res: NextApiRes
          * Asset is ready and doesn't have moderation info, so let's request it
          */
         if (asset.status === 'ready' && !asset.moderation_info) {
-          asset = await requestModerationInfo(assetId);
+          asset = await requestModerationInfo(asset);
         }
         /*
          * If moderation_info is 'ready', let's check if it's TOO HOT
@@ -67,7 +75,7 @@ export default async function assetHandler (req: NextApiRequest, res: NextApiRes
              *
              * If it does not, then all we care about is the asset status
              */
-            status: (asset.status === 'ready ' && asset.moderation_info.status === 'ready') ? 'ready' : 'preparing',
+            status: (asset.status === 'ready' && asset.moderation_info.status === 'ready') ? 'ready' : 'preparing',
             errors: asset.errors,
             playback_id: asset.playback_ids[0].id,
           },
