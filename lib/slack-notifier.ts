@@ -94,7 +94,7 @@ const baseBlocks = ({ playbackId, assetId, duration }: {playbackId: string, asse
     ],
   }]);
 
-export const sendSlackAssetReady = async ({ playbackId, assetId, duration, moderationScores }: {playbackId: string, assetId: string, duration: number, moderationScores?: ModerationScores }): Promise<null> => {
+export const sendSlackAssetReady = async ({ playbackId, assetId, duration, googleScores, hiveScores }: {playbackId: string, assetId: string, duration: number, googleScores?: ModerationScores, hiveScores?: ModerationScores }): Promise<null> => {
   if (!slackWebhook) {
     console.log('No slack webhook configured'); // eslint-disable-line no-console
     return null;
@@ -102,12 +102,22 @@ export const sendSlackAssetReady = async ({ playbackId, assetId, duration, moder
 
   const blocks = baseBlocks({ playbackId, assetId, duration });
 
-  if (moderationScores) {
+  if (googleScores) {
     blocks.push({
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `*Moderation scores:*\n ${JSON.stringify(moderationScores)}`,
+        text: `*Moderation scores (Google):*\n ${JSON.stringify(googleScores)} | score is 1-5`,
+      }
+    });
+  }
+
+  if (hiveScores) {
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Moderation scores (Hive):*\n ${JSON.stringify(hiveScores)} | score is 0-1`,
       }
     });
   }
