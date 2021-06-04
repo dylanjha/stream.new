@@ -99,6 +99,86 @@ After all of this is set up the flow will be:
 1. (optional) Your server verifies the webhook signature
 1. If the webhook matches `video.asset.ready` then your server will post a message to your slack channel that has the Mux Asset ID, the Mux Playback ID, and a thumbnail of the video.
 
+# Step 5 (optional) Add automatic content analysis to Slackbot Moderator (Google Vision API)
+
+stream.new can automatically moderate content with the help of Google's [Cloud vision API](https://cloud.google.com/vision).
+
+Follow these steps to help moderate uploaded content:
+
+- `GOOGLE_APPLICATION_CREDENTIALS` - This is a base64 encoded JSON representation of your Google service account credentials. Follow instructions below.
+
+1. First, you will need to set up a google developer account at [cloud.google.com](https://cloud.google.com/).
+1. Create a project
+1. Create a service account for your project and enable the "Cloud Vision API" for your project
+
+Export a Google Service Account authentication file in JSON format. If you have a file that is like this:
+
+`service_account.json`
+
+```
+{
+  "type": "service_account",
+  "project_id": "",
+  "private_key_id": "",
+  "private_key": "-----BEGIN PRIVATE KEY-----\",
+  "client_email": "",
+  "client_id": "",
+  "auth_uri": "",
+  "token_uri": "",
+  "auth_provider_x509_cert_url": "",
+  "client_x509_cert_url": ""
+}
+```
+
+Get the base64 encoded string of this JSON file like so:
+
+```
+cat service-account.json | base64
+```
+
+^ This command will output one long string. This string is what you will use for the ENV var `GOOGLE_APPLICATION_CREDENTIALS`.
+
+When the Slackbot Moderator message gets posted to slack, it will now include a "Moderation score (Google)" with 2 dimensions:
+
+* `"adult"`
+* `"suggestive"`
+* `"violent"`
+
+Each dimension will have a score from 1-5. You should interpret these scores in terms of likelihood that the video contains this type of content. This
+is based on Google Vision's [Likelihood score](https://cloud.google.com/vision/docs/reference/rpc/google.cloud.vision.v1#google.cloud.vision.v1.Likelihood)
+
+* `1`: very unlikely
+* `2`: unlikely
+* `3`: possible
+* `4`: likely
+* `5`: very likely
+
+
+![Slackbot message](screenshots/moderation-score-slack.png)
+
+
+# Step 6 (optional) Add automatic content analysis to Slackbot Moderator ([Hive AI](https://thehive.ai/))
+
+stream.new can automatically moderate content with the help of [Hive AI](https://thehive.ai/).
+
+Follow these steps to help moderate uploaded content:
+
+- `HIVE_AI_KEY` - This is a base64 encoded JSON representation of your Google service account credentials. Follow instructions below.
+
+1. First, you will need to set up an account at [thehive.ai](https://thehive.ai/).
+1. Create a project
+1. Get the API key for your prject
+
+When the Slackbot Moderator message gets posted to slack, it will now include a section titled "Moderation score (hive)" with 2 dimensions:
+
+* `"adult"`
+* `"suggestive"`
+
+Each dimension will have a score from 0-1 with a precision of 6 decimal places. These numbers come from the "Classification API" that Hive AI provides. [Details here](https://docs.thehive.ai/reference#classification).
+
+![Slackbot message](screenshots/moderation-score-slack.png)
+
+
 ### Videos to test in development:
 
 When developing, if you make any changes to the video player, make sure it works and looks good with videos of various dimensions:

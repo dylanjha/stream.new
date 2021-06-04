@@ -1,28 +1,14 @@
 /* globals Image */
-import { useState, useEffect, useRef } from 'react';
-// import Plyr from 'plyr';
-// import 'plyr/dist/plyr.css';
+import { useState, useEffect, useRef, forwardRef } from 'react';
+import Plyr from 'plyr';
+import 'plyr/dist/plyr.css';
 import Hls from 'hls.js';
 import mux from 'mux-embed';
-import 'media-chrome';
+
 import logger from '../lib/logger';
 import { breakpoints } from '../style-vars';
-
-declare global {
-  module JSX { // eslint-disable-line @typescript-eslint/no-namespace,@typescript-eslint/prefer-namespace-keyword
-    interface IntrinsicElements {
-      'media-container': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-control-bar': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-play-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-mute-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-volume-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-progress-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-playback-rate-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-pip-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-fullscreen-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
-  }
-}
+import { HTMLVideoElementWithPlyr } from '../types';
+import { useCombinedRefs } from '../util/use-combined-refs';
 
 /*
  * We need to set the width/height of the player depending on what the dimensions of
@@ -47,6 +33,7 @@ declare global {
 type Props = {
   playbackId: string
   poster: string
+  currentTime?: number
   onLoaded: () => void
   onError: (error: ErrorEvent) => void
 };
@@ -58,9 +45,10 @@ type SizedEvent = {
   }
 };
 
-const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  // const playerRef = useRef<Plyr | null>(null);
+const VideoPlayer = forwardRef<HTMLVideoElementWithPlyr, Props>(({ playbackId, poster, currentTime, onLoaded, onError }, ref) => {
+  const videoRef = useRef<HTMLVideoElementWithPlyr>(null);
+  const metaRef = useCombinedRefs(ref, videoRef);
+  const playerRef = useRef<Plyr | null>(null);
   const [isVertical, setIsVertical] = useState<boolean | null>();
   const [playerInitTime] = useState(Date.now());
 
@@ -94,16 +82,14 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
     hls = null;
     if (video) {
       video.addEventListener('error', videoError);
-      /*
       playerRef.current = new Plyr(video, {
         previewThumbnails: { enabled: true, src: `https://image.mux.com/${playbackId}/storyboard.vtt` },
         storage: { enabled: false },
         fullscreen: {
           iosNative: true
         },
-        captions: { active: false, language: 'auto', update: true }
+        captions: { active: true, language: 'auto', update: true }
       });
-      */
 
       if (video.canPlayType('application/vnd.apple.mpegurl')) {
         // This will run in safari, where HLS is supported natively
@@ -124,6 +110,7 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
           'This is an old browser that does not support MSE https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API',
         );
       }
+
       if (typeof mux !== 'undefined' && process.env.NEXT_PUBLIC_MUX_ENV_KEY) {
         mux.monitor(video, {
           hlsjs: hls,
@@ -151,35 +138,37 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
     };
   }, [playbackId, videoRef]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (currentTime && video) {
+      video.currentTime = currentTime;
+    }
+  }, [currentTime]);
+
   return (
     <>
       <div className='video-container'>
-        <media-container>
-          <video
-            ref={videoRef}
-            slot="media"
-            poster={poster}
-            playsInline
-            crossOrigin="true"
-          >
-            <track label="thumbnails" default kind="metadata" src={`https://image.mux.com/${playbackId}/storyboard.vtt`} />
-          </video>
-          <media-control-bar>
-            <media-play-button>Play</media-play-button>
-            <media-mute-button>Mute</media-mute-button>
-            <media-volume-range>Volume</media-volume-range>
-            <media-progress-range>Progress</media-progress-range>
-            <media-playback-rate-button></media-playback-rate-button>
-            <media-pip-button>PIP</media-pip-button>
-            <media-fullscreen-button>Fullscreen</media-fullscreen-button>
-          </media-control-bar>
-        </media-container>
+        <video ref={metaRef} poster={poster} controls playsInline />
       </div>
       <style jsx>{`
+        :global(:root) {
+          --plyr-color-main: #1b1b1b;
+          --plyr-range-fill-background: #ccc;
+        }
+        :global(.plyr__controls button),
+        :global(.plyr__controls input) {
+          cursor: pointer;
+        }
         .video-container {
           margin-bottom: 40px;
           margin-top: 40px;
           border-radius: 30px;
+        }
+        :global(.plyr:fullscreen video) {
+          max-width: initial;
+          max-height: initial;
+          width: 100%;
+          height: 100%;
         }
         video {
           display: block;
@@ -188,14 +177,17 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
           cursor: pointer;
         }
         @media only screen and (min-width: ${breakpoints.md}px) {
-          video {           
+          video {
             width: ${isVertical ? 'auto' : '1000px'};
-            height: ${isVertical ? '600px' : 'auto'}; 
+            height: ${isVertical ? '600px' : 'auto'};
             max-height: 70vh;
             min-width: 30rem;
           }
         }
         @media only screen and (max-width: ${breakpoints.md}px) {
+          :global(.plyr__volume, .plyr__menu, .plyr--pip-supported [data-plyr=pip]) {
+            display: none;
+          }
           video: {
             width: 100%;
             height: 100%;
@@ -205,6 +197,6 @@ const VideoPlayer: React.FC<Props> = ({ playbackId, poster, onLoaded, onError })
       </style>
     </>
   );
-};
+});
 
 export default VideoPlayer;

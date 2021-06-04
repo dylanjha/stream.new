@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import Mux from '@mux/mux-node';
 import { buffer } from 'micro';
 import { sendSlackAssetReady } from '../../../lib/slack-notifier';
+import { getScores as moderationGoogle } from '../../../lib/moderation-google';
+import { getScores as moderationHive } from '../../../lib/moderation-hive';
 
 const webhookSignatureSecret = process.env.MUX_WEBHOOK_SIGNATURE_SECRET;
 
@@ -9,8 +11,9 @@ const verifyWebhookSignature = (rawBody: string | Buffer, req: NextApiRequest) =
   if (webhookSignatureSecret) {
     // this will raise an error if signature is not valid
     Mux.Webhooks.verifyHeader(rawBody, req.headers['mux-signature'] as string, webhookSignatureSecret);
+  } else {
+    console.log('Skipping webhook sig verification because no secret is configured'); // eslint-disable-line no-console
   }
-  console.log('Skipping webhook sig verification because no secret is configured'); // eslint-disable-line no-console
   return true;
 };
 
@@ -39,6 +42,7 @@ export default async function muxWebhookHandler (req: NextApiRequest, res: NextA
       try {
         verifyWebhookSignature(rawBody, req);
       } catch (e) {
+        console.error('Error verifyWebhookSignature - is the correct signature secret set?', e);
         res.status(400).json({ message: e.message });
         return;
       }
@@ -50,16 +54,24 @@ export default async function muxWebhookHandler (req: NextApiRequest, res: NextA
         return;
       }
       try {
+        const playbackId = data.playback_ids && data.playback_ids[0] && data.playback_ids[0].id;
+        const duration = data.duration;
+
+        const googleScores = await moderationGoogle ({ playbackId, duration });
+        const hiveScores = await moderationHive ({ playbackId, duration });
+
         await sendSlackAssetReady({
           assetId: data.id,
-          playbackId: data.playback_ids && data.playback_ids[0] && data.playback_ids[0].id,
-          duration: data.duration,
+          playbackId,
+          duration,
+          googleScores,
+          hiveScores,
         });
         res.json({ message: 'thanks Mux, I notified myself about this' });
       } catch (e) {
         res.statusCode = 500;
         console.error('Request error', e); // eslint-disable-line no-console
-        res.json({ error: 'Error creating upload' });
+        res.json({ error: 'Error handling webhook' });
       }
       break;
     } default:
