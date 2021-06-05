@@ -2682,11 +2682,6 @@ event-target-shim@^5.0.0:
   resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
   integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
 
-eventemitter3@^4.0.3:
-  version "4.0.7"
-  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
-  integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
-
 events@^3.0.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
@@ -3272,13 +3267,10 @@ he@1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-hls.js@^0.14:
-  version "0.14.17"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-0.14.17.tgz#0127cff2ec2f994a54eb955fe669ef6153a8e317"
-  integrity sha512-25A7+m6qqp6UVkuzUQ//VVh2EEOPYlOBg32ypr34bcPO7liBMOkKFvbjbCBfiPAOTA/7BSx1Dujft3Th57WyFg==
-  dependencies:
-    eventemitter3 "^4.0.3"
-    url-toolkit "^2.1.6"
+hls.js@^1.0:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.0.6.tgz#4c582654370457e27a2fbff3d7b1b932cdae1889"
+  integrity sha512-6+T4aIbUYqh0KgAeQdCigJXFi4yVXRFVu9NfhI715zPeKD+3uwr8T8QZXQOcTGNoW2ne+5vRuSSiC5aopydndw==
 
 hmac-drbg@^1.0.1:
   version "1.0.1"
@@ -4566,10 +4558,10 @@ md5.js@^1.3.4:
     inherits "^2.0.1"
     safe-buffer "^5.1.2"
 
-media-chrome@^0.0.14:
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.0.14.tgz#8b21e7fe2bfb5033ca6a31ee14d7d358837d05c3"
-  integrity sha512-BeWNf266wxRMUBK/QMESQ5fqB8P0JA2yvPL5AZScO3X8pD3AtmF57xjpeoIPFXygZbZafTi8Ki6nHRerAsbJqQ==
+media-chrome@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/media-chrome/-/media-chrome-0.1.0.tgz#88400ca48f6e246325ff0b631d1292bde3ba6619"
+  integrity sha512-kmJbiQ7JRiTov7TheqQXFvfO48IpDv8JE7WJUNmthpXgm5Ov7IMVS9WzOirb72k6hOSf7r1QTCGP82YSHxROQw==
 
 merge-stream@^2.0.0:
   version "2.0.0"
@@ -6537,11 +6529,6 @@ urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
-
-url-toolkit@^2.1.6:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/url-toolkit/-/url-toolkit-2.2.2.tgz#51ef27b56d3187185f9ecf4a8ac7e8f55203c89d"
-  integrity sha512-l25w6Sy+Iy3/IbogunxhWwljPaDnqpiKvrQRoLBm6DfISco7NyRIS7Zf6+Oxhy1T8kHxWdwLND7ZZba6NjXMug==
 
 url@^0.11.0:
   version "0.11.0"
