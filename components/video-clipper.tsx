@@ -1,10 +1,13 @@
 /* globals Image */
 import { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import Hls from 'hls.js';
 import logger from '../lib/logger';
 import Router from 'next/router';
 import 'media-chrome';
 import { breakpoints } from '../style-vars';
+
+dynamic(() => import('media-chrome/dist/extras/media-clip-selector'), { ssr: false });
 
 type Props = {
   playbackId: string
@@ -23,7 +26,7 @@ type SizedEvent = {
 declare global {
   module JSX { // eslint-disable-line @typescript-eslint/no-namespace,@typescript-eslint/prefer-namespace-keyword
     interface IntrinsicElements {
-      'media-container': any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      'media-controller': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-control-bar': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-play-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-mute-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -39,7 +42,7 @@ declare global {
 const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRangeRef = useRef<HTMLElement | null>(null);
-  const [isVertical, setIsVertical] = useState<boolean | null>();
+  // const [isVertical, setIsVertical] = useState<boolean | null>();
   const [errorMessage, setErrorMessage] = useState('');
   const [isCreatingClip, setIsCreatingClip] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -53,7 +56,7 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
   const onImageLoad = (event: SizedEvent) => {
     const [w, h] = [event.target.width, event.target.height];
     if (w && h) {
-      setIsVertical((w / h) < 1);
+      // setIsVertical((w / h) < 1);
       onLoaded();
     } else {
       onLoaded();
@@ -174,7 +177,7 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
   return (
     <>
       <div className='video-container'>
-        <media-container>
+        <media-controller>
           <video
             ref={videoRef}
             slot="media"
@@ -188,7 +191,7 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
             <media-mute-button></media-mute-button>
             <media-volume-range></media-volume-range>
           </media-control-bar>
-        </media-container>
+        </media-controller>
 
         <div className="times">
           <div>Start: {startTime} <button onClick={() => setStartTime(Math.round(videoRef.current?.currentTime || 0))}>Set start</button></div>
