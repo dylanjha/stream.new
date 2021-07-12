@@ -3,3 +3,14 @@ export enum RecordState {
   PREPARING,
   RECORDING
 }
+
+export interface HTMLVideoElementWithPlyr extends HTMLVideoElement {
+  plyr: Plyr
+}
+
+export type ModerationScores = {
+  adult?: number;
+  violent?: number;
+  suggestive?: number;
+}
+
