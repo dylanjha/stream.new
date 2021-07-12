@@ -1,13 +1,13 @@
 /* globals Image */
 import { useState, useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import Hls from 'hls.js';
 import logger from '../lib/logger';
 import Router from 'next/router';
 import 'media-chrome';
 import { breakpoints } from '../style-vars';
 
-dynamic(() => import('media-chrome/dist/extras/media-clip-selector'), { ssr: false });
+// dynamic(() => import('media-chrome/dist/extras/media-clip-selector'), { ssr: false });
 
 type Props = {
   playbackId: string
@@ -31,10 +31,7 @@ declare global {
       'media-play-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-mute-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-volume-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-progress-range': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-pip-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
       'media-clip-selector': any; // eslint-disable-line @typescript-eslint/no-explicit-any
-      'media-fullscreen-button': any; // eslint-disable-line @typescript-eslint/no-explicit-any
     }
   }
 }
@@ -93,6 +90,10 @@ const VideoClipper: React.FC<Props> = ({ playbackId, poster, onLoaded, onError }
       setDuration(videoRef.current.duration);
     }
   };
+
+  useEffect(() => {
+    import('media-chrome/dist/extras/media-clip-selector');
+  }, []);
 
   /*
    * See comment above -- we're loading the poster image just so we can grab the dimensions

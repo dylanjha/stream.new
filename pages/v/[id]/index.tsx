@@ -19,7 +19,8 @@ type Params = {
 export type Props = {
   playbackId: string,
   shareUrl: string,
-  poster: string
+  poster: string,
+  isClippable: boolean,
 };
 
 export const getStaticProps: GetStaticProps = async (context)  => {
