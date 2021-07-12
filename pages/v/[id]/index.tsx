@@ -3,6 +3,7 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import copy from 'copy-to-clipboard';
+import Mux from '@mux/mux-node';
 import FullpageLoader from '../../../components/fullpage-loader';
 import VideoPlayer from '../../../components/video-player';
 import Layout from '../../../components/layout';
@@ -14,12 +15,26 @@ type Params = {
 }
 
 export const getStaticProps: GetStaticProps = async (context)  => {
+  const { Video } = new Mux();
   const { params } = context;
   const { id: playbackId } = (params as Params);
   const poster = `https://image.mux.com/${playbackId}/thumbnail.png`;
   const shareUrl = `${HOST_URL}/v/${playbackId}`;
 
-  return { props: { playbackId, shareUrl, poster } };
+  let fromExpectedEnv = false;
+
+  try {
+    fromExpectedEnv = !!(await Video.PlaybackIds.get(playbackId));
+  } catch (e) {
+    if (e.type === 'invalid_parameters') {
+      fromExpectedEnv = false;
+    } else {
+      throw e;
+    }
+  }
+
+
+  return { props: { playbackId, shareUrl, poster, fromExpectedEnv } };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
