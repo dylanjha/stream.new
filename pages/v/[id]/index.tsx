@@ -29,20 +29,29 @@ export const getStaticProps: GetStaticProps = async (context)  => {
   const poster = `${getImageBaseUrl()}/${playbackId}/thumbnail.png`;
   const shareUrl = `${HOST_URL}/v/${playbackId}`;
 
-  let fromExpectedEnv = false;
+  let isClippable = false;
+
+  /*
+   * stream.new is special by design -- the playback URL for /v/:id will work for _ANY_
+   * public Mux playback ID. Even public playback IDs from other accounts
+   *
+   * However, clipping only works for playback IDs that were created in the expected
+   * environment (The clipping API doesn't work across environments).
+   *
+   */
 
   try {
-    fromExpectedEnv = !!(await Video.PlaybackIds.get(playbackId));
+    isClippable = !!(await Video.PlaybackIds.get(playbackId));
   } catch (e) {
     if (e.type === 'invalid_parameters') {
-      fromExpectedEnv = false;
+      isClippable = false;
     } else {
       throw e;
     }
   }
 
 
-  return { props: { playbackId, shareUrl, poster, fromExpectedEnv } };
+  return { props: { playbackId, shareUrl, poster, isClippable } };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -53,7 +62,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const META_TITLE = "View this video created on stream.new";
-const Playback: React.FC<Props> = ({ playbackId, shareUrl, poster }) => {
+const Playback: React.FC<Props> = ({ playbackId, shareUrl, poster, isClippable }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCopied, setIsCopied] = useState(false);
@@ -127,7 +136,7 @@ const Playback: React.FC<Props> = ({ playbackId, shareUrl, poster }) => {
             </a>
           )}
         </div>
-        {!openReport && (
+        {!openReport && isClippable && (
           <div><Link href={`/v/${playbackId}/clip`}><a>Clip this video</a></Link></div>
         )}
         <div className="report-form">
